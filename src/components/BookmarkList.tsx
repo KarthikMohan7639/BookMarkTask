@@ -2,15 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import { deleteBookmark } from '@/app/actions'
+import { deleteBookmark, type Bookmark } from '@/app/actions/bookmarks'
 import { Trash2Icon, ExternalLinkIcon } from 'lucide-react'
-
-type Bookmark = {
-  id: string
-  url: string
-  title: string
-  created_at: string
-}
 
 export default function BookmarkList({ initialBookmarks }: { initialBookmarks: Bookmark[] }) {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>(initialBookmarks)
@@ -52,15 +45,29 @@ export default function BookmarkList({ initialBookmarks }: { initialBookmarks: B
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this bookmark?')) {
+      // Find the bookmark to potentially restore it
+      const bookmarkToDelete = bookmarks.find((b) => b.id === id)
+
       try {
         // Optimistic update
         setBookmarks((current) => current.filter((b) => b.id !== id))
-        await deleteBookmark(id)
+
+        const response = await deleteBookmark(id)
+        if (response.error) {
+            throw new Error(response.error)
+        }
       } catch (error) {
         console.error("Failed to delete", error)
-        // Revert optimistic update by fetching or just letting the user refresh (ideally fetch)
-        // For simplicity, we just alert
-        alert("Failed to delete bookmark")
+        // Revert optimistic update
+        if (bookmarkToDelete) {
+             setBookmarks((current) => {
+                 // Insert back in the same roughly sorted position or just unshift
+                 return [bookmarkToDelete, ...current].sort((a, b) =>
+                    new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+                 )
+             })
+        }
+        alert(error instanceof Error ? error.message : "Failed to delete bookmark")
       }
     }
   }

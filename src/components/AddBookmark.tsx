@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { addBookmark, fetchMetadata } from '@/app/actions'
+import { fetchMetadata } from '@/app/actions'
+import { addBookmark } from '@/app/actions/bookmarks'
 import { PlusIcon } from 'lucide-react'
 
 export default function AddBookmark() {
@@ -9,19 +10,26 @@ export default function AddBookmark() {
   const [title, setTitle] = useState('')
   const [loading, setLoading] = useState(false)
   const [isFetchingMetadata, setIsFetchingMetadata] = useState(false)
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!url) return
+    setErrorMsg(null)
 
     setLoading(true)
     try {
-      await addBookmark(url, title)
-      setUrl('')
-      setTitle('')
+      const response = await addBookmark(url, title)
+
+      if (response.error) {
+        setErrorMsg(response.error)
+      } else {
+        setUrl('')
+        setTitle('')
+      }
     } catch (error) {
       console.error(error)
-      alert('Failed to add bookmark')
+      setErrorMsg('An unexpected error occurred while adding the bookmark.')
     } finally {
       setLoading(false)
     }
@@ -52,6 +60,11 @@ export default function AddBookmark() {
 
   return (
     <form onSubmit={handleSubmit} className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800 mb-8">
+      {errorMsg && (
+        <div className="mb-4 p-3 bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400 rounded-lg text-sm">
+          {errorMsg}
+        </div>
+      )}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
           <label htmlFor="url" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">

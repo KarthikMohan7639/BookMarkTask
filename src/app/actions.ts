@@ -1,62 +1,46 @@
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
-import { revalidatePath } from 'next/cache'
 import * as cheerio from 'cheerio'
 
-export async function addBookmark(url: string, title: string) {
-  const supabase = await createClient()
+function isValidUrl(urlString: string) {
+    try {
+        const url = new URL(urlString);
+        // Only allow http and https protocols
+        if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+            return false;
+        }
 
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    throw new Error("Unauthorized")
-  }
-
-  const { error } = await supabase
-    .from('bookmarks')
-    .insert({
-      url,
-      title: title || url,
-      user_id: user.id
-    })
-
-  if (error) {
-    console.error("Error adding bookmark:", error)
-    throw new Error("Failed to add bookmark")
-  }
-
-  revalidatePath('/dashboard')
-}
-
-export async function deleteBookmark(id: string) {
-    const supabase = await createClient()
-
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      throw new Error("Unauthorized")
+        // Extremely basic SSRF protection: block localhost and common local IP patterns
+        // In a true production app, you would use a dedicated library or robust regex for SSRF protection
+        const hostname = url.hostname.toLowerCase();
+        if (
+            hostname === 'localhost' ||
+            hostname === '127.0.0.1' ||
+            hostname === '::1' ||
+            hostname.startsWith('10.') ||
+            hostname.startsWith('192.168.') ||
+            (hostname.match(/^172\.(1[6-9]|2[0-9]|3[0-1])\./))
+        ) {
+            return false;
+        }
+        return true;
+    } catch {
+        return false; // Invalid URL format
     }
-
-    const { error } = await supabase
-      .from('bookmarks')
-      .delete()
-      .match({ id, user_id: user.id })
-
-    if (error) {
-      console.error("Error deleting bookmark:", error)
-      throw new Error("Failed to delete bookmark")
-    }
-
-    revalidatePath('/dashboard')
 }
 
 export async function fetchMetadata(url: string) {
-    // Authenticate the request to prevent abuse/SSRF
+    // Authenticate the request to prevent abuse
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
+        return null;
+    }
+
+    if (!isValidUrl(url)) {
+        console.error("Invalid or restricted URL provided for metadata fetching.");
         return null;
     }
 
