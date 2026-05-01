@@ -37,4 +37,4 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 
 Check and approved by karthik mohan
-PR approved!
+PR approved by Karthik Mohan
