@@ -28,6 +28,16 @@ export async function addBookmark(
     return { error: 'Unauthorized: You must be logged in to add a bookmark.' }
   }
 
+  // Prevent XSS via javascript: protocols
+  try {
+      const parsedUrl = new URL(url)
+      if (parsedUrl.protocol !== 'http:' && parsedUrl.protocol !== 'https:') {
+          return { error: 'Invalid URL. Only HTTP and HTTPS protocols are allowed.' }
+      }
+  } catch {
+      return { error: 'Invalid URL format.' }
+  }
+
   // Insert bookmark
   const { data, error } = await supabase
     .from('bookmarks')
