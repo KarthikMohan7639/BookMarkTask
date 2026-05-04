@@ -23,12 +23,7 @@ export default async function Dashboard() {
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Error fetching bookmarks:', {
-      message: error.message,
-      code: error.code,
-      details: error.details,
-      hint: error.hint,
-    })
+    console.error('Error fetching bookmarks:', error.message || JSON.stringify(error))
   }
 
   return (
