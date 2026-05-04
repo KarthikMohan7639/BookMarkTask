@@ -35,6 +35,28 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
+  // Enforce 1-minute session timeout via the login_expires cookie.
+  // The cookie is set at login time with maxAge=60 so it auto-expires after 1 minute.
+  // If an authenticated user is detected but the cookie is gone, sign them out locally
+  // and redirect to the login page.
+  if (user) {
+    const loginExpiresCookie = request.cookies.get('login_expires')
+    const expiresAt = loginExpiresCookie ? parseInt(loginExpiresCookie.value, 10) : NaN
+    const sessionExpired = !loginExpiresCookie || isNaN(expiresAt) || Date.now() >= expiresAt
+
+    if (sessionExpired) {
+      await supabase.auth.signOut({ scope: 'local' })
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
+      const redirectResponse = NextResponse.redirect(url)
+      // Copy the auth-clearing cookies (set by signOut) to the redirect response
+      supabaseResponse.cookies.getAll().forEach(({ name, value, ...options }) => {
+        redirectResponse.cookies.set(name, value, options)
+      })
+      return redirectResponse
+    }
+  }
+
   if (
     !user &&
     !request.nextUrl.pathname.startsWith('/auth') &&
