@@ -12,66 +12,6 @@ A modern, real-time bookmark management app built with **Next.js**, **Supabase**
 ✅ **Beautiful UI** - Dark mode, responsive design, smooth animations  
 ✅ **Bonus: Auto-Metadata** - Page titles fetch automatically when you paste a URL  
 
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 18+
-- A Supabase project (free tier works great)
-- A Google OAuth application
-
-### 1. Clone & Install
-```bash
-git clone https://github.com/KarthikMohan7639/BookMarkTaskForJules.git
-cd BookMarkTaskForJules
-npm install
-```
-
-### 2. Set Up Supabase Database
-1. Go to [Supabase Dashboard](https://supabase.com/dashboard)
-2. Create a new project or use existing one
-3. Copy `supabase_schema.sql` into **SQL Editor**
-4. Run it to create the bookmarks table with RLS policies
-
-### 3. Configure Environment Variables
-Create `.env.local`:
-```
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-
-Get these from Supabase project settings → API.
-
-### 4. Run Development Server
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## 🌐 Deploy on Vercel
-
-### Step 1: Push to GitHub
-Ensure your code is pushed to GitHub:
-```bash
-git push origin main
-```
-
-### Step 2: Connect to Vercel
-1. Go to [vercel.com/new](https://vercel.com/new)
-2. Select your GitHub repository
-3. Click **Import**
-
-### Step 3: Add Environment Variables
-In Vercel deployment settings, add:
-```
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
-
-### Step 4: Deploy
-Click **Deploy** and wait for completion (~2-3 minutes).
-
-Your live URL will be: `https://your-project-name.vercel.app`
 
 ## 🏗️ Architecture
 
@@ -154,7 +94,17 @@ When you paste a URL and move to the title field:
 
 **Coming soon!** After deploying to Vercel, your live URL will be displayed here.
 
-## 🤝 Contributing
+## 🤝My Contribution:
+
+- Successfully deployed the requested project in the vercel
+- Successfully used supabase and google oauth for login
+- I have used VS code IDE for coding
+- I used Git, Github for version control for commits
+- GitHub copilot for Coding part with the appropriate Prompts and 
+- fine tuning the generated Results with the specific errors and everything
+- In the way of developements I was out of token 
+- So I have used other AI tools like chatgpt and gemini for help
+- So after testing i Deployed the project on vercel
 
 Feel free to fork, improve, and submit PRs!
 
