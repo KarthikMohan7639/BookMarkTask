@@ -1,6 +1,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import BookmarkManager from '@/components/BookmarkManager'
+import SessionGuard from '@/components/SessionGuard'
 import { LogOutIcon, BookmarkIcon } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
@@ -28,6 +29,7 @@ export default async function Dashboard() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black font-sans">
+      <SessionGuard />
       <header className="bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-800 sticky top-0 z-10 shadow-sm">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
