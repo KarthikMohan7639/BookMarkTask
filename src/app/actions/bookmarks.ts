@@ -39,7 +39,7 @@ export async function addBookmark(
   }
 
   // Insert bookmark
-  const { data, error } = await supabase
+  const result = await supabase
     .from('bookmarks')
     .insert({
       user_id: user.id,
@@ -47,12 +47,24 @@ export async function addBookmark(
       title: title || url, // fallback to URL if title is empty
     })
     .select()
-    .single()
 
-  if (error) {
-    console.error('Error inserting bookmark:', error)
+  // Handle both error from Supabase and empty result
+  if (result.error) {
+    console.error('Error inserting bookmark:', {
+      message: result.error.message,
+      code: result.error.code,
+      details: result.error.details,
+      hint: result.error.hint,
+    })
     return { error: 'Failed to add bookmark to the database.' }
   }
+
+  if (!result.data || result.data.length === 0) {
+    console.error('No data returned after insert')
+    return { error: 'Failed to add bookmark to the database.' }
+  }
+
+  const data = result.data[0]
 
   revalidatePath('/dashboard')
 
@@ -79,7 +91,12 @@ export async function deleteBookmark(
     .match({ id, user_id: user.id })
 
   if (error) {
-    console.error('Error deleting bookmark:', error)
+    console.error('Error deleting bookmark:', {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+    })
     return { error: 'Failed to delete bookmark from the database.' }
   }
 

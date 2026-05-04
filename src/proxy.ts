@@ -10,10 +10,12 @@ export const config = {
     /*
      * Match all request paths except for the ones starting with:
      * - _next/static (static files)
+     * - _next/webpack-hmr (dev HMR websocket)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * Feel free to modify this pattern to include more paths.
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    // Exclude all Next internals (/_next/*) so dev HMR and static routes are not proxied
+    '/((?!_next|favicon.ico|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
